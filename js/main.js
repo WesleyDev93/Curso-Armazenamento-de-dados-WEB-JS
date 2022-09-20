@@ -3,7 +3,7 @@ const lista = document.getElementById ('lista');
 const itens = JSON.parse (localStorage.getItem ("itens")) || [];
 
 itens.forEach ((elemento) =>{
-      console.log (elemento.nome, elemento.quantidade);
+      criaElemento (elemento);
      
 });
 
@@ -19,20 +19,29 @@ form.addEventListener ('submit', (evento) =>{
         const nome = evento.target.elements['nome'];
         const quantidade = evento.target.elements['quantidade'];
 
+        const existe = itens.find (elemento => elemento.nome === nome.value)
 
         const itemAtual = {
-            "nome": nome,
-            "quantidade": quantidade
+            "nome": nome.value,
+            "quantidade": quantidade.value
             
         }
         
-         criaElemento (nome.value, quantidade.value );
 
+        if (existe) {
+            itemAtual.id = existe.id
+            atualizaElemento (itemAtual)
+
+            itens[existe.id] = itemAtual;
+        }else {
+              
+            itemAtual.id = itens.length
+            criaElemento (itemAtual);
+            itens.push (itemAtual);
+        }
 
 
          
-    
-        itens.push (itemAtual);
     
          localStorage.setItem ("itens",JSON.stringify (itens));
 
@@ -44,7 +53,7 @@ form.addEventListener ('submit', (evento) =>{
 
 
 
-function criaElemento(nome,quantidade) {
+function criaElemento(item) {
     //console.log (nome);
     //console.log (quantidade);
 
@@ -54,20 +63,25 @@ function criaElemento(nome,quantidade) {
 
 
     const numeroItem = document.createElement ('strong');
-    numeroItem.innerHTML = quantidade;
+    numeroItem.innerHTML = item.quantidade;
+    numeroItem.dataset.id = item.id
 
    // console.log (numeroItem)
 
 
    novoItem.appendChild (numeroItem);
-   novoItem.innerHTML += nome;
+   novoItem.innerHTML += item.nome;
+
      //console.log (novoItem)
    
 
      
      lista.appendChild (novoItem);
 
-    
-     
-     
+}
+
+
+
+function atualizaElemento (item) {
+    document.querySelector("[data-id='"+item.id+"']").innerHTML = item.quantidade
 }
